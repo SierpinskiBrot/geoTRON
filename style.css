@@ -1,0 +1,66 @@
+
+
+.parent {
+    display: grid;
+    height: 100%;
+    background-color: #FEFAE0;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: 3fr, 1fr, 4fr, 4fr, 4fr, 4fr;
+    grid-template-columns: 15fr 5fr 20fr 20fr 20fr 20fr;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 8px;
+}
+    
+.topsDiv {
+    background-color: #CCD5AE;
+}
+
+.petroDiv {
+    background-color: #E9EDC9;
+}
+
+.div2 {
+    grid-column-start: 1;
+    grid-row-start: 2;
+}
+
+.curvesDiv {
+    background-color: #CCD5AE;
+    grid-row: span 2 / span 2;
+    grid-column-start: 1;
+    grid-row-start: 3;
+}
+.graphdiv {
+    background-color: #E9EDC9;
+}
+.depthDiv {
+    background-color: #CCD5AE;
+    height: 100% !important;
+    grid-row: span 4 / span 4;
+    grid-column-start: 2;
+    grid-row-start: 1;
+}
+
+.div5 {
+    grid-row: span 4 / span 4;
+    grid-column-start: 3;
+    grid-row-start: 1;
+}
+
+.div6 {
+    grid-row: span 4 / span 4;
+    grid-column-start: 4;
+    grid-row-start: 1;
+}
+
+.div7 {
+    grid-row: span 4 / span 4;
+    grid-column-start: 5;
+    grid-row-start: 1;
+}
+
+.div8 {
+    grid-row: span 4 / span 4;
+    grid-column-start: 6;
+    grid-row-start: 1;
+}

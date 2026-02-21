@@ -1,0 +1,56 @@
+<head>
+    <script type="module" src="scripts.js"></script>
+    <script type="module" src="multiTracks.js"></script>
+    <script type="text/javascript" src="lib/uPlot.iife.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="lib/uPlot.min.css" />
+
+</head>
+
+<body>
+    <div class="parent">
+        <div class="topsDiv">
+            <p>Tops</p>
+            <input type="file" id="topsFileInput">
+            <table style="width: 100%;" id="topsTable">
+                <tr>
+                    <th>Top</th>
+                    <th>TVD (m)</th>
+                </tr>
+            </table>
+        </div>
+        <div class="petroDiv">petro</div>
+        <div class="curvesDiv">
+            <p>Curves</p>
+            <input type="file" id="lasFileInput">
+            <table>
+                <tr>
+                    <th colspan="2">Curve Editor</th>
+                </tr>
+                <tr>
+                    <td>Curve</td>
+                    <td><select id="curveSelector"></select></td>
+                </tr>
+                <tr>
+                    <td>Operation</td>
+                    <td><input type="text" id="curveOperator"placeholder="+10 or *5"></input></td>
+                </tr>
+                <tr>
+                    <td>Mnemonic</td>
+                    <td><input type="text" id="newName"></input></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button id="deleteCurveBtn">DELETE CURVE</button></td>
+                </tr>
+            </table>
+
+            <button id="exportButton">Export .las</button>
+        </div>
+        <div class="depthDiv" id="yAxisDiv">Depth</div>
+        <div class="div5 graphdiv" id="graph1div">Graph1</div>
+        <div class="div6 graphdiv" id="graph2div">Graph2</div>
+        <div class="div7 graphdiv" id="graph3div">Graph3</div>
+        <div class="div8 graphdiv" id="graph4div">Graph4</div>
+    </div>
+    
+</body>
