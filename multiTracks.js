@@ -369,7 +369,7 @@ function createDepthVsCurvePlot({ target, depthCurve, xCurve, width, height, yMi
         points: { show: false },
         spanGaps: false,
         stroke: "#D4A373",
-        width: 3,
+        width: 2,
       },
     ],
     hooks: {
@@ -380,6 +380,15 @@ function createDepthVsCurvePlot({ target, depthCurve, xCurve, width, height, yMi
     legend: { show: false },
     cursor: { x: true, y: true, drag: {x: false, y: true} },
   };
+  if(xCurve.mnemonic == "DPHIX") {
+    opts.scales.y.dir = -1;
+    opts.scales.y.min = -5;
+    opts.scales.y.max = 15;
+    opts.series[1].width = 1;
+    opts.series[1].fillTo = parseFloat(document.getElementById("dphiCutoffInput").value);
+    opts.series[1].fill = "#00FF00"
+    console.log(opts.series)
+  }
  
   return new uPlot(opts, data, target);
 }

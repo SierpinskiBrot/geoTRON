@@ -23,9 +23,20 @@
 
 export function bindCurveEditor(las, tracksCtrl, {
   mainSelectorId = "curveSelector",
+  densitySelectorId = "densitySelector",
+  gammaSelectorId = "gammaSelector",
+  resistivitySelectorId = "resistivitySelector",
   operatorId = "curveOperator",
   newNameId = "newName",
   applyBtnId = "curveApplyEdits",
+
+  pmaInputId = "pmaInput",
+  pfInputId = "pfInput",
+  rwInputId = "rwInput",
+  nInputId = "nInput",
+  mInputId = "mInput",
+
+  dphiCutoffInputId = "dphiCutoffInput",
 
   deleteBtnId = "deleteCurveBtn",
 
@@ -36,7 +47,7 @@ export function bindCurveEditor(las, tracksCtrl, {
   deleteCancelId = "curveDeleteCancel",
 
 
-  protectedMnemonics = ["DEPT", "DEPTH"],
+  protectedMnemonics = ["DEPT", "DEPTH", "DPHIX"],
 } = {}) {
   let _las = las;
 
@@ -45,6 +56,17 @@ export function bindCurveEditor(las, tracksCtrl, {
   const opInput = mustEl(operatorId);
   const nameInput = mustEl(newNameId);
   const applyBtn = mustEl(applyBtnId);
+
+  const densitySel = mustEl(densitySelectorId);
+  const gammaSel = mustEl(gammaSelectorId)
+  const resistivitySel = mustEl(resistivitySelectorId)
+  const dphiCutoffInput = mustEl(dphiCutoffInputId);
+
+  const pmaInput = mustEl(pmaInputId)
+  const pfInput = mustEl(pfInputId)
+  const rwInput = mustEl(rwInputId)
+  const nInput = mustEl(nInputId)
+  const mInput = mustEl(mInputId)
 
   const deleteBtn = mustEl(deleteBtnId);
 
@@ -55,7 +77,25 @@ export function bindCurveEditor(las, tracksCtrl, {
   const btnCancel = mustEl(deleteCancelId);
 
   // Initial populate everywhere
+  populateParameterSelectors(_las, densitySel, gammaSel, resistivitySel);
+  createPetroCurve(las)
   refreshAllSelectors(_las, tracksCtrl, mainSel);
+  
+  function refreshPetro() {
+    createPetroCurve(las); 
+    updateTracksMnemonic(tracksCtrl, "DPHIX", "DPHIX")
+    updateTracksMnemonic(tracksCtrl, "SWARCH", "SWARCH")
+
+  }
+  densitySel.addEventListener("change", () => {refreshPetro()})
+  gammaSel.addEventListener("change", () => {refreshPetro()})
+  resistivitySel.addEventListener("change", () => {refreshPetro()})
+  pmaInput.addEventListener("change", () => {refreshPetro()})
+  pfInput.addEventListener("change", () => {refreshPetro()})
+  rwInput.addEventListener("change", () => {refreshPetro()})
+  nInput.addEventListener("change", () => {refreshPetro()})
+  mInput.addEventListener("change", () => {refreshPetro()})
+  dphiCutoffInput.addEventListener("change", () => {refreshPetro()})
 
   // Apply button logic (single source of truth)
   applyBtn.addEventListener("click", () => {
@@ -333,6 +373,34 @@ export function populateCurveSelector(selectEl, las) {
   }
 }
 
+export function populateParameterSelectors(las, densitySel, gammaSel, resistivitySel) {
+
+    while (densitySel.firstChild) densitySel.removeChild(densitySel.firstChild);
+    while (gammaSel.firstChild) gammaSel.removeChild(gammaSel.firstChild);
+    while (resistivitySel.firstChild) resistivitySel.removeChild(resistivitySel.firstChild);
+
+    for (const c of las.curves) {
+        const unit = c.unit;
+        const mn = c.mnemonic;
+        const label = unit ? `${mn} (${unit})` : mn;
+        const opt = document.createElement("option");
+        opt.value = mn;
+        opt.textContent = label;
+        if(unit == "K/M3" || unit == "KG/M3") {
+            densitySel.appendChild(opt);
+        }
+        if(unit == "GAPI") {
+            gammaSel.appendChild(opt)
+        }
+        if(unit == "OHMM") {
+            resistivitySel.appendChild(opt)
+        }
+        
+    }
+
+    
+}
+
 export function parseOperatorExpr(s) {
   const t = s
     .replace(/\s+/g, "")
@@ -411,6 +479,94 @@ export function addDerivedCurveNamed(las, sourceMnemonic, outMnemonic, { op, k }
     rows[r][dstIdx] = (r < dstData.length ? dstData[r] : null);
   }
 }
+
+export function createPetroCurve(las) {
+    console.log("editing petro curve")
+    const densityMnemonic = (document.getElementById("densitySelector").value || "").trim();
+    const dIdx = findCurveIdx(las, densityMnemonic);
+    if (dIdx === -1) throw new Error(`Curve not found: ${densityMnemonic}`);
+
+    const resistivityMnemonic = (document.getElementById("resistivitySelector").value || "").trim();
+    const rIdx = findCurveIdx(las, resistivityMnemonic)
+    if(rIdx === -1) throw new Error(`Curve not found: ${resistivityMnemonic}`)
+
+    const dSrc = las.curves[dIdx];
+    const rSrc = las.curves[rIdx]
+
+    let dphiIdx = findCurveIdx(las, "DPHIX");
+    let swIdx = findCurveIdx(las, "SWARCH");
+
+    const pma = parseFloat(document.getElementById("pmaInput").value)
+    const pf = parseFloat(document.getElementById("pfInput").value)
+    const n = parseFloat(document.getElementById("nInput").value)
+    const m = parseFloat(document.getElementById("mInput").value)
+    const rw = parseFloat(document.getElementById("rwInput").value)
+    const cutoff = parseFloat(document.getElementById("dphiCutoffInput").value)
+
+
+    const dData = dSrc.data || [];
+    const rData = dSrc.data || [];
+    const dphiData = new Array(dData.length);
+    const swData = new Array(dData.length);
+
+    for (let i = 0; i < dData.length; i++) {
+        const v = dData[i];
+        if (v == null || !Number.isFinite(v)) {
+            dphiData[i] = null;
+            continue;
+        }
+        //dstData[i] = Math.max(100*(pma-v)/(pma-pf),cutoff)
+        dphiData[i] = 100*(pma-v)/(pma-pf)
+        swData[i] = 100*(rw/(Math.max(dphiData[i]/100,cutoff/100)**m * rData[i])) ** (1/n)
+    }
+
+    if (dphiIdx === -1) {
+        las.curves.push({
+        mnemonic: "DPHIX",
+        unit: "%",
+        api: dSrc.api || "",
+        code: dSrc.code || "",
+        description: `Porosity from bulk density`,
+        rawLine: "",
+        data: dphiData,
+        });
+        dphiIdx = las.curves.length - 1;
+    } else {
+        las.curves[dphiIdx].data = dphiData;
+    }
+
+    ensureRowsFromCurves(las);
+
+    const rows = las.data.rows;
+    for (let r = 0; r < rows.length; r++) {
+        rows[r][dphiIdx] = (r < dphiData.length ? dphiData[r] : null);
+    }
+
+    if (swIdx === -1) {
+        las.curves.push({
+        mnemonic: "SWARCH",
+        unit: "%",
+        api: dSrc.api || "",
+        code: dSrc.code || "",
+        description: `Porosity from bulk density`,
+        rawLine: "",
+        data: swData,
+        });
+        swIdx = las.curves.length - 1;
+    } else {
+        las.curves[swIdx].data = swData;
+    }
+
+    ensureRowsFromCurves(las);
+
+    for (let r = 0; r < rows.length; r++) {
+        rows[r][swIdx] = (r < swData.length ? swData[r] : null);
+    }
+
+    
+}
+
+
 
 function applyOp(v, op, k) {
   switch (op) {

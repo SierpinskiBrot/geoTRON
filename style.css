@@ -6,7 +6,7 @@
     background-color: #FEFAE0;
     grid-template-columns: repeat(6, 1fr);
     grid-template-columns: 3fr, 1fr, 4fr, 4fr, 4fr, 4fr;
-    grid-template-columns: 15fr 5fr 20fr 20fr 20fr 20fr 20fr 20fr 20fr 20fr;
+    grid-template-columns: 30fr 5fr 20fr 20fr 20fr 20fr 20fr 20fr 20fr 20fr;
     grid-template-rows: repeat(4, 1fr);
     gap: 8px;
 }
@@ -38,6 +38,13 @@
 .petroDiv {
     background-color: #E9EDC9;
 }
+
+table td:first-child {
+    white-space: nowrap;
+    text-align: right;
+}
+
+
 
 .div2 {
     grid-column-start: 1;
