@@ -10,8 +10,12 @@
 <body>
     <div class="parent">
         <div class="topsDiv">
-            <p>Tops</p>
+            <p class="panelHeader">Tops</p>
+            <label id="topsFileDropZone" for="topsFileInput">
+                Drag and drop tops .csv file or click to browse...
+            </label>
             <input type="file" id="topsFileInput">
+            
             <table style="width: 100%;" id="topsTable">
                 <tr>
                     <th>Top</th>
@@ -19,11 +23,17 @@
                 </tr>
             </table>
         </div>
-        <div class="petroDiv">petro</div>
+        <div class="petroDiv">
+            <p class="panelHeader">Petro</p>
+        </div>
         <div class="curvesDiv">
-            <p>Curves</p>
+            <p class="panelHeader">Curves</p>
+            <label id="lasFileDropZone" for="lasFileInput">
+                Drag and drop curves .las file or click to browse...
+            </label>
             <input type="file" id="lasFileInput">
-            <table>
+            
+            <table id="curveEditorTable">
                 <tr>
                     <th colspan="2">Curve Editor</th>
                 </tr>
@@ -33,17 +43,20 @@
                 </tr>
                 <tr>
                     <td>Operation</td>
-                    <td><input type="text" id="curveOperator"placeholder="+10 or *5"></input></td>
+                    <td><input type="text" id="curveOperator"placeholder="Like +10 or *5"></input></td>
                 </tr>
                 <tr>
                     <td>Mnemonic</td>
-                    <td><input type="text" id="newName"></input></td>
+                    <td><input type="text" id="newName" placeholder="Leave blank for default"></input></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><button id="deleteCurveBtn">DELETE CURVE</button></td>
+                    <td colspan="2"><button id="curveApplyEdits">Apply Edits</td>
                 </tr>
-            </table>
 
+            </table>
+            <br>
+            <button id="deleteCurveBtn">Delete Curves</button>
+            <br>
             <button id="exportButton">Export .las</button>
         </div>
         <div class="depthDiv" id="yAxisDiv">Depth</div>
@@ -51,6 +64,27 @@
         <div class="div6 graphdiv" id="graph2div">Graph2</div>
         <div class="div7 graphdiv" id="graph3div">Graph3</div>
         <div class="div8 graphdiv" id="graph4div">Graph4</div>
+        <div class="div9 graphdiv" id="graph5div">Graph5</div>
+        <div class="div10 graphdiv" id="graph6div">Graph6</div>
+        <div class="div11 graphdiv" id="graph7div">Graph7</div>
+        <div class="div12 graphdiv" id="graph8div">Graph8</div>
     </div>
-    
+    <!-- Delete Curves Modal -->
+    <div id="curveDeleteModal" class="curve-del-modal" aria-hidden="true">
+        <div class="curve-del-panel" role="dialog" aria-modal="true" aria-labelledby="curveDeleteTitle">
+            <div class="panelHeader">
+                <div id="curveDeleteTitle">Delete Curves</div>
+            </div>
+
+            <div id="curveDeleteGrid" class="curve-del-grid">
+                <!-- populated dynamically -->
+            </div>
+
+            <div class="curve-del-actions">
+                <button id="curveDeleteCancel" type="button">Cancel</button>
+                <button id="curveDeleteConfirm" type="button">Delete selected</button>
+            </div>
+        </div>
+    </div>
+
 </body>

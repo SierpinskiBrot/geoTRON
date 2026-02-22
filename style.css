@@ -6,9 +6,29 @@
     background-color: #FEFAE0;
     grid-template-columns: repeat(6, 1fr);
     grid-template-columns: 3fr, 1fr, 4fr, 4fr, 4fr, 4fr;
-    grid-template-columns: 15fr 5fr 20fr 20fr 20fr 20fr;
+    grid-template-columns: 15fr 5fr 20fr 20fr 20fr 20fr 20fr 20fr 20fr 20fr;
     grid-template-rows: repeat(4, 1fr);
     gap: 8px;
+}
+
+#topsFileDropZone, #lasFileDropZone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    border: 3px solid #D4A373;
+    border-radius: 4px;
+    background-color: #FEFAE0;
+    cursor: pointer;
+}
+
+#topsFileInput, #lasFileInput {
+    display: none;
+}
+
+.panelHeader {
+    font-weight: bold;
+    margin: 0.5em
 }
     
 .topsDiv {
@@ -31,6 +51,8 @@
     grid-row-start: 3;
 }
 .graphdiv {
+    grid-row: span 4 / span 4;
+    grid-row-start: 1;
     background-color: #E9EDC9;
 }
 .depthDiv {
@@ -42,25 +64,93 @@
 }
 
 .div5 {
-    grid-row: span 4 / span 4;
     grid-column-start: 3;
-    grid-row-start: 1;
 }
 
 .div6 {
-    grid-row: span 4 / span 4;
     grid-column-start: 4;
-    grid-row-start: 1;
 }
 
 .div7 {
-    grid-row: span 4 / span 4;
     grid-column-start: 5;
-    grid-row-start: 1;
 }
 
 .div8 {
-    grid-row: span 4 / span 4;
     grid-column-start: 6;
-    grid-row-start: 1;
 }
+
+.div9 {
+    grid-column-start: 7;
+}
+
+.div10 {
+    grid-column-start: 8;
+}
+
+.div11 {
+    grid-column-start: 9;
+}
+
+.div12 {
+    grid-column-start: 10;
+}
+
+#curveEditorTable input, #curveEditorTable button, #curveEditorTable select {
+    width: -webkit-fill-available;
+}
+
+.curve-del-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.45);
+    z-index: 9999;
+  }
+  .curve-del-modal.open { display: flex; }
+
+  .curve-del-panel {
+    width: min(900px, 95vw);
+    max-height: min(750px, 85vh);
+    overflow: hidden;
+    background: #CCD5AE;
+    border: 3px solid #D4A373;
+    border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  .curve-del-grid {
+    padding: 0.5em;
+    overflow: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+  }
+
+  .curve-del-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5em;
+    border: 1px solid #000;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .curve-del-item input { cursor: pointer; }
+
+  .curve-del-item.is-protected {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .curve-del-actions {
+    padding: 0.5em;
+    border-top: 1px solid #000;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }

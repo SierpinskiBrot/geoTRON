@@ -12,15 +12,19 @@
 // - This module is called only after LAS + TOPS are uploaded, so yMin/yMax are known.
 
 export function initFourDepthTracks(las, {
-  containerIds = ["graph1div", "graph2div", "graph3div", "graph4div"],
+  containerIds = ["graph1div", "graph2div", "graph3div", "graph4div","graph5div","graph6div","graph7div","graph8div"],
   yAxisDivId = "yAxisDiv",
 
   depthMnemonicCandidates = ["DEPT", "DEPTH"],
   initialCurves = [
-    las.curves[1].mnemonic, 
-    las.curves[2].mnemonic,
-    las.curves[3].mnemonic,
-    las.curves[4].mnemonic
+    las.curves[1]?.mnemonic ?? "", 
+    las.curves[2]?.mnemonic ?? "",
+    las.curves[3]?.mnemonic ?? "",
+    las.curves[4]?.mnemonic ?? "",
+    las.curves[5]?.mnemonic ?? "",
+    las.curves[6]?.mnemonic ?? "",
+    las.curves[7]?.mnemonic ?? "",
+    las.curves[8]?.mnemonic ?? ""
 ],
 
   
@@ -235,7 +239,6 @@ function initSharedYAxis(state, height, dropdownHeightPx) {
   spacer.style.height = `${dropdownHeightPx}px`;
   spacer.style.minHeight = `${dropdownHeightPx}px`;
   yRoot.prepend(spacer)
-  console.log(state)
   
 }
 
@@ -321,12 +324,9 @@ function createDepthVsCurvePlot({ target, depthCurve, xCurve, width, height, yMi
   }
 
   const data = [ys, xs];
-  console.log(xCurve.mnemonic)
-  console.log(data)
 
   let tops = []
   for(let top of window.topsData.tops) tops.push(top.topD)
-    console.log(tops)
 
   const opts = {
     width,
@@ -348,10 +348,12 @@ function createDepthVsCurvePlot({ target, depthCurve, xCurve, width, height, yMi
             side:3,
             grid: {show: true} ,
             values: () => [],
+            size: 0
         }, {
             scale: "y",
             side:2, 
-            size: 50
+            size: 50,
+            splits: (u, i, min, max) => [min, max]
         }
       // x-axis only; y-axis is shared in #yAxisDiv
       //{ scale: "x", label: `${xCurve.mnemonic}${xCurve.unit ? ` (${xCurve.unit})` : ""}` },

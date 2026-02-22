@@ -1,19 +1,45 @@
 import { readLAS, writeLAS, readFileAsText, downloadTextFile } from "./lasio.js";
 import { initFourDepthTracks } from "./multiTracks.js";
-import { bindCurveOpsAndTracks } from "./curveOpsAndTracks.js";
-import { bindRenameDeleteUI } from "./curveRenameDeleteUI.js";
+import { bindCurveEditor } from "./curveEditor.js";
 
 let lasLoaded = false;
 let topsLoaded = false;
 window.las = null
 let tracksCtrl;
-let opsCtrl;
-let renameDeleteCtrl
+let curveEditorCtrl;
 
-document.getElementById("lasFileInput").addEventListener("change", async (e) => {
-    console.log("reading")
-    const file = e.target.files?.[0];
-    if (!file) return;
+
+window.addEventListener("drop", (e) => {
+  if ([...e.dataTransfer.items].some((item) => item.kind === "file")) {
+    e.preventDefault();
+  }
+});
+window.addEventListener("dragover", (e) => {
+  const fileItems = [...e.dataTransfer.items].filter(
+    (item) => item.kind === "file",
+  );
+  if (fileItems.length > 0) {
+    e.preventDefault();
+    if (!topsFileDropZone.contains(e.target) && !lasFileDropZone.contains(e.target)) {
+      e.dataTransfer.dropEffect = "none";
+    }
+  }
+});
+
+document.getElementById("lasFileInput").addEventListener("change", (e) => handleLasInput(e.target.files?.[0]));
+document.getElementById("lasFileDropZone").addEventListener("drop", (e) => {
+  e.preventDefault()
+  const file = e.dataTransfer?.files?.[0]
+  handleLasInput(file)})
+
+document.getElementById("topsFileInput").addEventListener("change", (e) => handleTopsInput(e.target.files?.[0]));
+document.getElementById("topsFileDropZone").addEventListener("drop", (e) => {
+  e.preventDefault()
+  const file = e.dataTransfer?.files?.[0]
+  handleTopsInput(file)})
+  
+async function handleLasInput(file) {
+    lasFileDropZone.innerText = shortenFileName(file.name)
 
     const text = await readFileAsText(file);
     window.las = readLAS(text);
@@ -29,13 +55,9 @@ document.getElementById("lasFileInput").addEventListener("change", async (e) => 
 
     lasLoaded = true;
     if(topsLoaded) startGraph();
+}
 
-});
-
-document.getElementById("topsFileInput").addEventListener("change", async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
+async function handleTopsInput(file) {
   try {
     await loadTopsCsvFile(file);
     //applyDepthRangeToAllGraphs();   // next section
@@ -43,6 +65,8 @@ document.getElementById("topsFileInput").addEventListener("change", async (e) =>
     console.error(err);
     alert(String(err?.message ?? err));
   }
+
+  topsFileDropZone.innerText = shortenFileName(file.name)
 
   for(let top of window.topsData.tops) {
     let row = document.createElement("tr")
@@ -58,15 +82,14 @@ document.getElementById("topsFileInput").addEventListener("change", async (e) =>
 
   topsLoaded = true
   if(lasLoaded) startGraph();
-
-});
+}
 
 function startGraph() {
     tracksCtrl?.destroy?.();
     tracksCtrl = initFourDepthTracks(window.las);
 
-    opsCtrl = bindCurveOpsAndTracks(window.las, tracksCtrl)
-    renameDeleteCtrl = bindRenameDeleteUI(window.las, tracksCtrl)
+    curveEditorCtrl?.destroy?.();
+    curveEditorCtrl = bindCurveEditor(window.las, tracksCtrl)
 }
 
 document.getElementById("exportButton").addEventListener("click", () => {
@@ -140,6 +163,15 @@ async function loadTopsCsvFile(file) {
   return window.topsData;
 }
 
+function shortenFileName(name) {
+  if (name.length <= 20) return name;
+
+  return (
+    name.slice(0, 12) +
+    "..." +
+    name.slice(-5)
+  );
+}
 
 
 
