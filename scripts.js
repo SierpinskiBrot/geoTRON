@@ -54,7 +54,8 @@ async function handleLasInput(file) {
 
 
     lasLoaded = true;
-    if(topsLoaded) startGraph();
+   // if(topsLoaded) startGraph();
+   startGraph();
 }
 
 async function handleTopsInput(file) {
@@ -160,6 +161,7 @@ async function loadTopsCsvFile(file) {
   const yMax = lowestTop + 10;
 
   window.topsData = { wellId, tops, yMin, yMax };
+  console.log(window.topsData)
   return window.topsData;
 }
 

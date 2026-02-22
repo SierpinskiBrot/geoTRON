@@ -45,8 +45,8 @@ export function initFourDepthTracks(las, {
 
   // REQUIRED for tops-driven depth range:
   // yMin = highestTop - 10, yMax = lowestTop + 10
-  yMin = window.topsData.yMin,
-  yMax = window.topsData.yMax,
+  yMin = window.topsData?.yMin?? las.curves[0].data[0],
+  yMax = window.topsData?.yMax?? las.curves[0].data[las.curves[0].data.length-1],
 } = {}) {
   const depthCurve = findCurve(las, depthMnemonicCandidates);
   if (!depthCurve) throw new Error(`Depth curve not found (tried: ${depthMnemonicCandidates.join(", ")})`);
@@ -326,7 +326,10 @@ function createDepthVsCurvePlot({ target, depthCurve, xCurve, width, height, yMi
   const data = [ys, xs];
 
   let tops = []
-  for(let top of window.topsData.tops) tops.push(top.topD)
+  if(window.topsData) {
+    for(let top of window.topsData?.tops) tops.push(top.topD)
+  }
+  
 
   const opts = {
     width,
