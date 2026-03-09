@@ -30,7 +30,7 @@
             </table>
         </div>
         <div class="petroDiv">
-            <p class="panelHeader">Petro</p>
+            <p class="panelHeader">Petrophysics</p>
             <table id="petroParametersTable">
                 <tr>
                     <th>Parameter</th>
@@ -74,13 +74,14 @@
                 </tr>
                 <tr>
                     <td>Res Cutoff</td>
-                    <td><input type="number" value="10"></td>
+                    <td><input type="number" id="resCutoff" value="10"></td>
                 </tr>
                 <tr>
                     <td>GR Cutoff</td>
-                    <td><input type="number" value="100"></td>
+                    <td><input type="number" id="grCutoff" value="100"></td>
                 </tr>
             </table>
+            <button id="zonalButton">Zonal Statistics ></button>
         </div>
         <div class="curvesDiv">
             <p class="panelHeader">Curves</p>
@@ -139,6 +140,65 @@
             <div class="curve-del-actions">
                 <button id="curveDeleteCancel" type="button">Cancel</button>
                 <button id="curveDeleteConfirm" type="button">Delete selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zonal Statistics Modal -->
+    <div id="zonalStatsModal" class="zonal-modal" aria-hidden="true">
+        <div class="zonal-panel" role="dialog" aria-modal="true" aria-labelledby="zonalStatsTitle">
+            <div class="zonal-header">
+                <div id="zonalStatsTitle" class="panelHeader">Zonal Statistics</div>
+                <button id="zonalStatsClose" type="button">Close</button>
+            </div>
+
+            <div class="zonal-section">
+                <div class="panelHeader">Between Every Two Tops</div>
+                <div class="zonal-table-wrap">
+                    <table class="zonal-table">
+                        <thead>
+                            <tr>
+                                <th>Zone</th>
+                                <th>Top</th>
+                                <th>Base</th>
+                                <th>Net Porous Interval</th>
+                                <th>Avg Porosity</th>
+                                <th>Avg Resistivity</th>
+                                <th>Avg Water Saturation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="zonalAllZonesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="zonal-section">
+                <div class="panelHeader">Custom Zone</div>
+                <div class="zonal-controls">
+                    <label>Top
+                        <select id="zonalTopA"></select>
+                    </label>
+                    <label>Base
+                        <select id="zonalTopB"></select>
+                    </label>
+                    <button id="zonalCustomRun" type="button">Calculate</button>
+                </div>
+                <div class="zonal-table-wrap">
+                    <table class="zonal-table">
+                        <thead>
+                            <tr>
+                                <th>Zone</th>
+                                <th>Top</th>
+                                <th>Base</th>
+                                <th>Net Porous Interval</th>
+                                <th>Avg Porosity</th>
+                                <th>Avg Resistivity</th>
+                                <th>Avg Water Saturation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="zonalCustomZoneBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

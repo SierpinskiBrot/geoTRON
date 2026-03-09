@@ -37,6 +37,8 @@ export function bindCurveEditor(las, tracksCtrl, {
   mInputId = "mInput",
 
   dphiCutoffInputId = "dphiCutoffInput",
+  resCutoffInputId = "resCutoff",
+  grCutoffInputId = "grCutoff",
 
   deleteBtnId = "deleteCurveBtn",
 
@@ -61,6 +63,8 @@ export function bindCurveEditor(las, tracksCtrl, {
   const gammaSel = mustEl(gammaSelectorId)
   const resistivitySel = mustEl(resistivitySelectorId)
   const dphiCutoffInput = mustEl(dphiCutoffInputId);
+  const resCutoffInput = mustEl(resCutoffInputId)
+  const grCutoffInput = mustEl(grCutoffInputId)
 
   const pmaInput = mustEl(pmaInputId)
   const pfInput = mustEl(pfInputId)
@@ -79,13 +83,16 @@ export function bindCurveEditor(las, tracksCtrl, {
   // Initial populate everywhere
   populateParameterSelectors(_las, densitySel, gammaSel, resistivitySel);
   createPetroCurve(las)
+  
+  
   refreshAllSelectors(_las, tracksCtrl, mainSel);
+  tracksCtrl.setTrack(6, "DPHIX");
+  tracksCtrl.setTrack(7, "SWARCH");
   
   function refreshPetro() {
-    createPetroCurve(las); 
+    createPetroCurve(_las);
     updateTracksMnemonic(tracksCtrl, "DPHIX", "DPHIX")
     updateTracksMnemonic(tracksCtrl, "SWARCH", "SWARCH")
-
   }
   densitySel.addEventListener("change", () => {refreshPetro()})
   gammaSel.addEventListener("change", () => {refreshPetro()})
@@ -96,6 +103,8 @@ export function bindCurveEditor(las, tracksCtrl, {
   nInput.addEventListener("change", () => {refreshPetro()})
   mInput.addEventListener("change", () => {refreshPetro()})
   dphiCutoffInput.addEventListener("change", () => {refreshPetro()})
+  resCutoffInput.addEventListener("change", () => {refreshPetro()})
+  grCutoffInput.addEventListener("change", () => {refreshPetro()})
 
   // Apply button logic (single source of truth)
   applyBtn.addEventListener("click", () => {
@@ -311,16 +320,16 @@ function getSelectedDeleteMnemonics(gridEl) {
   return out;
 }
 
-function refreshAllSelectors(las, tracksCtrl, mainSel) {
+function refreshAllSelectors(_las, tracksCtrl, mainSel) {
   const prevMain = mainSel.value;
-  populateCurveSelector(mainSel, las);
-  if (prevMain && las.curves.some(c => c.mnemonic === prevMain)) mainSel.value = prevMain;
+  populateCurveSelector(mainSel, _las);
+  if (prevMain && _las.curves.some(c => c.mnemonic === prevMain)) mainSel.value = prevMain;
 
   const tracks = tracksCtrl?.state?.tracks || [];
   for (const t of tracks) {
     const prev = t.selectEl.value;
-    populateCurveSelector(t.selectEl, las);
-    if (prev && las.curves.some(c => c.mnemonic === prev)) t.selectEl.value = prev;
+    populateCurveSelector(t.selectEl, _las);
+    if (prev && _las.curves.some(c => c.mnemonic === prev)) t.selectEl.value = prev;
   }
 }
 
@@ -505,7 +514,7 @@ export function createPetroCurve(las) {
 
 
     const dData = dSrc.data || [];
-    const rData = dSrc.data || [];
+    const rData = rSrc.data || [];
     const dphiData = new Array(dData.length);
     const swData = new Array(dData.length);
 
@@ -517,7 +526,9 @@ export function createPetroCurve(las) {
         }
         //dstData[i] = Math.max(100*(pma-v)/(pma-pf),cutoff)
         dphiData[i] = 100*(pma-v)/(pma-pf)
-        swData[i] = 100*(rw/(Math.max(dphiData[i]/100,cutoff/100)**m * rData[i])) ** (1/n)
+        swData[i] = 100*(rw / ( (dphiData[i]/100)**m * rData[i])) ** (1/n)
+        if(dphiData[i] < cutoff) swData[i] = null
+        
     }
 
     if (dphiIdx === -1) {
@@ -548,7 +559,7 @@ export function createPetroCurve(las) {
         unit: "%",
         api: dSrc.api || "",
         code: dSrc.code || "",
-        description: `Porosity from bulk density`,
+        description: `Water saturation`,
         rawLine: "",
         data: swData,
         });
@@ -564,6 +575,7 @@ export function createPetroCurve(las) {
     }
 
     
+
 }
 
 

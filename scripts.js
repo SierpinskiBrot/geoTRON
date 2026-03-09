@@ -1,12 +1,14 @@
 import { readLAS, writeLAS, readFileAsText, downloadTextFile } from "./lasio.js";
 import { initFourDepthTracks } from "./multiTracks.js";
 import { bindCurveEditor } from "./curveEditor.js";
+import { bindZonalStats } from "./zonalStats.js";
 
 let lasLoaded = false;
 let topsLoaded = false;
 window.las = null
 let tracksCtrl;
 let curveEditorCtrl;
+let zonalStatsCtrl;
 
 
 window.addEventListener("drop", (e) => {
@@ -73,7 +75,8 @@ async function handleTopsInput(file) {
     let row = document.createElement("tr")
     let lbl = document.createElement("td")
     let tvd = document.createElement("td")
-    lbl.innerText = top.label
+    if(top.label.slice(-8) == " TVD (m)") lbl.innerText = top.label.slice(0,-8);
+    else lbl.innerText = top.label;
     tvd.innerText = top.topD
     row.appendChild(lbl)
     row.appendChild(tvd)
@@ -91,7 +94,13 @@ function startGraph() {
 
     curveEditorCtrl?.destroy?.();
     curveEditorCtrl = bindCurveEditor(window.las, tracksCtrl)
+    zonalStatsCtrl?.refresh?.();
 }
+
+zonalStatsCtrl = bindZonalStats({
+  lasGetter: () => window.las,
+  topsGetter: () => window.topsData,
+});
 
 document.getElementById("exportButton").addEventListener("click", () => {
   const out = writeLAS(window.las);

@@ -161,3 +161,76 @@ table td:first-child {
     justify-content: flex-end;
     gap: 8px;
   }
+
+.zonal-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.45);
+    z-index: 10000;
+}
+.zonal-modal.open {
+    display: flex;
+}
+
+.zonal-panel {
+    width: min(1200px, 96vw);
+    max-height: 88vh;
+    overflow: auto;
+    background: #E9EDC9;
+    border: 3px solid #D4A373;
+    border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    padding: 0.75em;
+}
+
+.zonal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.zonal-section {
+    margin-top: 0.75em;
+}
+
+.zonal-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: end;
+    margin: 0.5em 0;
+}
+
+.zonal-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.zonal-table-wrap {
+    overflow: auto;
+    background: #FEFAE0;
+    border: 1px solid #D4A373;
+}
+
+.zonal-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.zonal-table th,
+.zonal-table td {
+    border: 1px solid #D4A373;
+    padding: 0.4em 0.5em;
+    text-align: center;
+}
+
+.zonal-table thead th {
+    position: sticky;
+    top: 0;
+    background: #CCD5AE;
+}

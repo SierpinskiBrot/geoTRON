@@ -356,7 +356,7 @@ function createDepthVsCurvePlot({ target, depthCurve, xCurve, width, height, yMi
             scale: "y",
             side:2, 
             size: 50,
-            splits: (u, i, min, max) => [min, max]
+            splits: xCurve.unit != "OHMM" ? (u, i, min, max) => [min, max] : "",
         }
       // x-axis only; y-axis is shared in #yAxisDiv
       //{ scale: "x", label: `${xCurve.mnemonic}${xCurve.unit ? ` (${xCurve.unit})` : ""}` },
@@ -386,8 +386,39 @@ function createDepthVsCurvePlot({ target, depthCurve, xCurve, width, height, yMi
     opts.scales.y.max = 15;
     opts.series[1].width = 1;
     opts.series[1].fillTo = parseFloat(document.getElementById("dphiCutoffInput").value);
-    opts.series[1].fill = "#00FF00"
-    console.log(opts.series)
+    opts.series[1].stroke = "#666600"
+    opts.series[1].fill = "#AAAA33"
+  }
+  if(xCurve.unit == "OHMM") {
+    opts.scales.y.min = 1;
+    opts.scales.y.max = 10000;
+    opts.scales.y.distr = 3;
+    opts.series[1].stroke = "#EE1111"
+    opts.series[1].fill = "#FF6666";
+    opts.series[1].fillTo = parseFloat(document.getElementById("resCutoff").value);
+    opts.scales.y.range = () => [1, 10000];
+
+    opts.axes[1].values = (u, ticks) => {
+      const s = u.scales.y;
+      const epsMin = Math.abs(s.min) * 1e-9 + 1e-12;
+      const epsMax = Math.abs(s.max) * 1e-9 + 1e-12;
+
+      return ticks.map(v => {
+        if (v == null || !Number.isFinite(v)) return "";
+
+        const isMin = Math.abs(v - s.min) <= epsMin;
+        const isMax = Math.abs(v - s.max) <= epsMax;
+
+        return (isMin || isMax) ? String(v) : "";
+      });
+    };
+  }
+  if(xCurve.unit == "GAPI") {
+    opts.scales.y.min = 30;
+    opts.scales.y.max = 130;
+    opts.series[1].stroke = "#006600"
+    opts.series[1].fill = "#33CC33";
+    opts.series[1].fillTo = parseFloat(document.getElementById("grCutoff").value);
   }
  
   return new uPlot(opts, data, target);
